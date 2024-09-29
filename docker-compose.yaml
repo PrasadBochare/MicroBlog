@@ -1,0 +1,67 @@
+
+version: '3.8'
+
+services:
+  frontend:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./frontend:/usr/share/nginx/html
+    depends_on:
+      - userservice
+      - postservice
+      - commentservice
+
+  userservice:
+    build: ./userservice
+    ports:
+      - "5001:5001"
+    environment:
+      - MONGODB_URI_USERS=mongodb://localhost:27017/users
+    depends_on:
+      - mongoUser
+
+  postservice:
+    build: ./postservice
+    ports:
+      - "5002:5002"
+    environment:
+      - MONGODB_URI_POSTS=mongodb://localhost:27017/posts
+    depends_on:
+      - mongoPost
+
+  commentservice:
+    build: ./commentservice
+    ports:
+      - "5003:5003"
+    environment:
+      - MONGODB_URI_COMMENTS=mongodb://localhost:27017/comments
+    depends_on:
+      - mongoComment
+
+  mongoUser:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo1_data:/data/db
+
+  mongoPost:
+    image: mongo:latest
+    ports:
+      - "27018:27017"
+    volumes:
+      - mongo2_data:/data/db
+
+  mongoComment:
+    image: mongo:latest
+    ports:
+      - "27019:27017"
+    volumes:
+      - mongo3_data:/data/db
+
+volumes:
+  mongo1_data:
+  mongo2_data:
+  mongo3_data:
